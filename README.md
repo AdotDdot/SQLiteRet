@@ -1,6 +1,6 @@
 SQLiteRet
 =========
-**Recover deleted SQLite data**
+**Recover deleted data from SQLite databases**
 
   SQLiteRet is a Python3 script which goes through a SQLite database file and dumps all intact deleted rows it finds. Optionally, it attempts retrieval of partial (corrupted) rows and exports to file.
 
