@@ -741,7 +741,7 @@ class DBScanner:
             #then visit each of the page numbers found
             for pageno in others:
                 #scan the pages and find the rows - if the user hasn't specified otherwise, 
-				        #corrupted rows won't be looked for and an empty list will be returned instead
+	        #corrupted rows won't be looked for and an empty list will be returned instead
                 introws, corrows = self.rrt.scan_page(self.pagesize*(pageno-1), self.pagesize*pageno, rootno)
                 #append to main dictionaries intact and corrupted rows
                 self.introws[rootno].extend(introws)
@@ -761,7 +761,7 @@ class DBScanner:
         '''Retrieval from pages with unknown schema'''
 
         #This function scans the pages which haven't been found to belong to a certain table. 
-		    #It bruteforces all the schemas trying to retrieve rows from each.
+        #It bruteforces all the schemas trying to retrieve rows from each.
         #If more than one schema has found valid rows, the program requires user interaction.
         
         print('Attempting retrieval from unknown schemas\nThe process may require user interaction!')
@@ -842,7 +842,7 @@ class DBScanner:
                 elif len(possible) == 0:
                     print('  No records found in this page')
                     #if no records have been found, there is a chance there are no more full page. 
-					#Go backwards, read a significant number of bytes and, if they're all 0,
+		    #Go backwards, read a significant number of bytes and, if they're all 0,
                     #terminate scanning.
                     self.file.seek(self.file.tell()-100)
                     if not any(self.file.read(100)): break
