@@ -50,12 +50,12 @@ Usage example:
 `sqliteret.py cookies.sqlite -c -o results.tsv -t -v`
 
   Sample output:
-![alt sample output](http://picpaste.com/pics/Screenshot_from_2014-05-29_19_42_25-T7T54hnz.1401386409.png "Sample output")
+![alt sample output](http://s3.postimg.org/3s8leoflv/two.png "Sample output")
 
 `sqliteret.py cookies.sqlite -c -o results.txt`
 
   Sample output:
-![alt sample output](http://picpaste.com/pics/Screenshot_from_2014-05-29_20_06_05-2o6owV4k.1401386788.png "Sample output")
+![alt sample output](http://s8.postimg.org/pocz34c4l/one.png "Sample output")
 
 
 Note:
