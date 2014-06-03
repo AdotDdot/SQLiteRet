@@ -220,66 +220,6 @@ class DBSchema:
         return [8 for i in range(skip)] + serials
 
 
-    def validate_serialsold(self, serials, tbl_desc, skip, nostrict):
-        '''Confronts an iterable of serial type varints with the table schema to see if they corrispond'''
-
-        validations = []
-
-        for i in range(len(serials)):
-
-            #first associate the serial number with the corresponding column
-            serial = serials[i]
-            col_desc = tbl_desc[i+skip]            
-
-            #check the type of the column and if notnull is set
-            col_type = col_desc[2].lower()
-            col_notnull = col_desc[3]
-
-            #get the column affinity
-            col_affinity = self.get_col_aff(col_type)
-
-            #in non-strict mode, the function follows sqlite's documentations guidelines about data types
-            #possibly stored by columns with certain affinities; this makes the check much less strict
-            #as it is possible to find more data types per affinity 
-            if nostrict:
-                    
-                if serial == 0 and not col_notnull: validations.append(serial)
-
-                #integer-, real- and numeric-affinity columns can store data in any possible way
-                elif col_affinity in ['INTEGER', 'NUMERIC', 'REAL', 'NONE']: validations.append(serial)
-
-                #text- and none-affinity columns can store strings and blob
-                elif col_affinity == 'NONE' and serial >= 12: validations.append(serial)
-
-                elif col_affinity == 'TEXT' and serial >= 12: validations.append(serial)
-
-                else: return False
-
-            #in strict mode, the function assumes a reasonable use of the column types;
-            #that is, it assumes that columns with INTEGER, REAL and NUMERIC affinity
-            #actually store numbers, TEXT stores strings, and NONE stores blob;
-            else:
-
-                #data can only be null if NOT NULL is not set
-                if serial == 0 and not col_notnull: validations.append(serial)
-                
-                elif col_affinity == 'INTEGER' and serial in [1, 2, 3, 4, 5, 6, 8, 9]: validations.append(serial)
-
-                #the validation for real includes the serial types for integer types smaller than 8 bytes because in certain cases
-                #the floating point number can be converted to integer
-                elif col_affinity == 'REAL' and serial in [1, 2, 3, 4, 5, 7, 8, 9]: validations.append(serial)
-
-                elif col_affinity == 'NUMERIC' and serial in [1, 2, 3, 4, 5, 6, 7, 8, 9]: validations.append(serial)
-
-                elif col_affinity == 'NONE' and serial >= 12 and not serial%2: validations.append(serial)
-
-                elif col_affinity == 'TEXT' and serial >= 13 and serial%2: validations.append(serial)
-
-                else: return False
-                
-        #return the validated serials plus a code 8 (a zero value) for each skipped one
-        return [8 for i in range(skip)] + validations
-        
         
 
     def get_col_aff(self, col_type):
@@ -410,13 +350,14 @@ class RecordRetriever:
                     continue
 
                 #if the row is not empty and its data is valid, append it to the list of results                
-                if any(row) and all([self.dbs.data_check(piece) for piece in row]) and all([self.compatible_strings(row)[1:] != vis[1:] for vis in self.dbs.cells[table_rootno]]):
+                if any(row) and all([self.dbs.data_check(piece) for piece in row]):
+                    #append to found the start and end of this row
+                    found[offset] = self.file.tell()
+                if all([self.compatible_strings(row)[1:] != vis[1:] for vis in self.dbs.cells[table_rootno]]):
                     if row[0] == None: row[0] = rowid
                     row = self.compatible_strings(row)
                     got.append(row)
                         
-                    #append to found the start and end of this row
-                    found[offset] = self.file.tell()
                     offset = self.file.tell()+1
                     continue
 
